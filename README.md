@@ -1,6 +1,6 @@
 # go-fs-extra
 
-[node-fs-extra](https://www.npmjs.com/package/fs-extra) 的 `go` 版本简单实现
+[node-fs-extra](https://www.npmjs.com/package/fs-extra) 的 `go` 版本的简单实现
 
 ## 动机
 
