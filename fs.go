@@ -2,6 +2,7 @@ package gofsextra
 
 import (
 	"os"
+	"path/filepath"
 
 	"github.com/markthree/go-fs-extra/utils"
 )
@@ -50,15 +51,31 @@ func ReadFile[T string | []byte](path string) (T, error) {
 	return T(data), nil
 }
 
-// TODO
 // 确保文件存在
-func EnsureFile(path string) error {
-	return nil
+func EnsureFile(path string) (*os.File, error) {
+	printError := utils.CreatePrintError("EnsureFile")
+	err := EnsureDir(path)
+	if err != nil {
+		printError(err)
+		return nil, err
+	}
+	fi, err := os.Create(path)
+	if err != nil {
+		printError(err)
+		return nil, err
+	}
+
+	return fi, err
 }
 
-// TODO
 // 确保目录存在
 func EnsureDir(path string) error {
+	PrintError := utils.CreatePrintError("EnsureDir")
+	err := os.MkdirAll(filepath.Dir(path), os.ModePerm)
+	if err != nil {
+		PrintError(err)
+		return err
+	}
 	return nil
 }
 
@@ -69,12 +86,14 @@ func PathExists(path string) bool {
 
 	if err == nil {
 		return true
-	} else if os.IsExist(err) {
+	}
+
+	if os.IsExist(err) {
 		return true
-	} else if os.IsNotExist(err) {
-		return false
 	} else {
-		printError(err)
+		if !os.IsNotExist(err) {
+			printError(err)
+		}
 		return false
 	}
 }
